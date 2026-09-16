@@ -1,0 +1,55 @@
+name: Bug report
+description: Something isn't working as expected.
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+        **Never paste your `GITHUB_PAT` or full logs containing secrets.**
+  - type: input
+    id: version
+    attributes:
+      label: Image tag / version
+      placeholder: "ghcr.io/tommasomarchionni/github-runner:latest, or a git commit SHA"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where are you running it?
+      options:
+        - Docker Compose
+        - Plain Docker
+        - Dokploy
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Output of `docker logs <container>`, with any secret values redacted.
+      render: shell
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Your `docker-compose.yml`/environment variables, with `GITHUB_PAT` removed or redacted.
+      render: yaml
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this hasn't been reported yet.
+          required: true
+        - label: I removed all secrets (PAT, tokens) from logs and configuration before submitting.
+          required: true

@@ -1,0 +1,80 @@
+site_name: GitHub Runner (Docker, PAT-based)
+site_description: Containerized self-hosted runner for GitHub Actions, built on the official actions/runner image, authenticated via PAT, with persistent and self-healing state.
+site_url: https://tommasomarchionni.github.io/github-runner/
+repo_url: https://github.com/tommasomarchionni/github-runner
+repo_name: tommasomarchionni/github-runner
+edit_uri: edit/main/docs/
+docs_dir: docs
+
+theme:
+  name: material
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+    - toc.follow
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tommasomarchionni
+
+nav:
+  - Home: index.md
+  - PAT permissions: pat-permissions.md
+  - Getting started:
+      - Prebuilt image (GHCR): prebuilt-image.md
+      - Docker Compose: docker-compose-guide.md
+      - Dokploy: dokploy.md
+      - Plain Docker: docker-plain.md
+  - Configuration:
+      - Environment variables: environment-variables.md
+      - Labels and runner groups: labels-and-groups.md
+      - Ephemeral runners: ephemeral.md
+      - Docker inside workflows: docker-in-workflow.md
+  - Reliability:
+      - Persistence and self-healing: persistence.md
+      - Graceful shutdown: shutdown.md
+  - Security: security.md
+  - Testing and CI: testing.md
+  - Troubleshooting: troubleshooting.md

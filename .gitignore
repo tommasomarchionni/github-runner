@@ -1,0 +1,29 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Runner runtime state (only relevant for local, non-containerized testing)
+_work/
+.runner
+.credentials
+.credentials_rsaparams
+*.log
+
+# Docker
+*.tar
+
+# Docs site build output
+site/
+
+# Python (mkdocs virtualenv, if used locally)
+.venv/
+__pycache__/
+*.pyc
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

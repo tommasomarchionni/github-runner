@@ -1,0 +1,77 @@
+services:
+  github-runner:
+    # Default: build locally from the official actions/runner tarball.
+    # For a faster start with no local build (recommended for Dokploy),
+    # comment out "build:" and use "image: ghcr.io/tommasomarchionni/github-runner:latest"
+    # instead — see docs/prebuilt-image.md.
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+      args:
+        RUNNER_VERSION: ${RUNNER_VERSION:-2.337.0}
+        # Leave empty to auto-detect from the build platform (see docker/Dockerfile).
+        RUNNER_ARCH: ${RUNNER_ARCH:-}
+        INSTALL_DOCKER_CLI: ${INSTALL_DOCKER_CLI:-false}
+    image: ${RUNNER_IMAGE_NAME:-github-runner}:${RUNNER_IMAGE_TAG:-local}
+    container_name: ${RUNNER_NAME:-github-runner-01}
+    restart: unless-stopped
+    init: true
+
+    environment:
+      # --- Authentication (required) -----------------------------------
+      GITHUB_PAT: ${GITHUB_PAT:?Set GITHUB_PAT in your .env file}
+
+      # --- Scope: EITHER repository OR organization ----------------------
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-}
+      GITHUB_ORG: ${GITHUB_ORG:-}
+
+      # --- GitHub Enterprise Server (leave empty for github.com) --------
+      GITHUB_SERVER_URL: ${GITHUB_SERVER_URL:-https://github.com}
+      GITHUB_API_URL: ${GITHUB_API_URL:-https://api.github.com}
+
+      # --- Runner configuration -------------------------------------------
+      RUNNER_NAME: ${RUNNER_NAME:-github-runner-01}
+      RUNNER_LABELS: ${RUNNER_LABELS:-}
+      RUNNER_GROUP: ${RUNNER_GROUP:-Default}
+      RUNNER_WORKDIR: ${RUNNER_WORKDIR:-_work}
+      RUNNER_EPHEMERAL: ${RUNNER_EPHEMERAL:-false}
+      RUNNER_DISABLE_UPDATE: ${RUNNER_DISABLE_UPDATE:-true}
+      RUNNER_REPLACE: ${RUNNER_REPLACE:-true}
+      RUNNER_UNREGISTER_TIMEOUT: ${RUNNER_UNREGISTER_TIMEOUT:-30}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      EXTRA_CONFIG_ARGS: ${EXTRA_CONFIG_ARGS:-}
+
+      # --- Self-healing on restart/recreate (see docs/persistence.md) ----
+      RUNNER_STARTUP_GRACE_SECONDS: ${RUNNER_STARTUP_GRACE_SECONDS:-20}
+      RUNNER_START_MAX_ATTEMPTS: ${RUNNER_START_MAX_ATTEMPTS:-3}
+      RUNNER_FORCE_RECONFIGURE: ${RUNNER_FORCE_RECONFIGURE:-false}
+
+    volumes:
+      # Persists the registration (.runner/.credentials) and the work
+      # directory across container restarts and redeploys.
+      - github-runner-data:/home/runner/actions-runner
+      # Optional: uncomment only if a workflow needs to run `docker build`/
+      # `docker run` against the host (see docs/docker-in-workflow.md).
+      # - /var/run/docker.sock:/var/run/docker.sock
+
+    # Resource limits: tune these to match your host's real capacity.
+    mem_limit: ${RUNNER_MEM_LIMIT:-2g}
+    cpus: ${RUNNER_CPUS:-2.0}
+
+    # Time given to the container to finish `config.sh remove` during
+    # shutdown, before Docker forces a kill.
+    stop_grace_period: 60s
+
+    networks:
+      - runner-network
+
+volumes:
+  github-runner-data:
+    name: ${RUNNER_VOLUME_NAME:-github-runner-data}
+
+networks:
+  runner-network:
+    # Dedicated, isolated network: the runner should have no default access
+    # to other networks/internal services. Attach other networks only if a
+    # workflow genuinely needs to reach an internal service.
+    driver: bridge

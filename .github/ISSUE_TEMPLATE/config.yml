@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://tommasomarchionni.github.io/github-runner/
+    about: Check the docs site first — most configuration questions are answered there.
+  - name: Security vulnerability
+    url: https://github.com/tommasomarchionni/github-runner/security/advisories/new
+    about: Please report security issues privately instead of opening a public issue.

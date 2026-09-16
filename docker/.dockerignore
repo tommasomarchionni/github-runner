@@ -1,0 +1,7 @@
+# The build context for this Dockerfile is the docker/ directory itself
+# (see docker-compose.yml and docs/docker-plain.md), which only ever
+# contains Dockerfile and entrypoint.sh. This file guards against stray
+# local artifacts if the context is ever widened.
+**/.DS_Store
+**/*.log
+**/.git

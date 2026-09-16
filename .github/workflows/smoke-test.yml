@@ -1,0 +1,51 @@
+name: Runner smoke test
+
+# Trigger this manually (repository "Actions" tab) AFTER starting the
+# runner container, to verify it registered correctly and can execute a
+# real job.
+on:
+  workflow_dispatch:
+    inputs:
+      labels:
+        description: "Labels to require (comma-separated, in addition to self-hosted)"
+        required: false
+        default: "self-hosted"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    # If you set custom RUNNER_LABELS, adjust the requested tags here,
+    # e.g.: runs-on: [self-hosted, linux, x64, ci]
+    runs-on: ${{ fromJSON(format('["{0}"]', join(split(inputs.labels, ','), '","'))) }}
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Environment info
+        run: |
+          echo "Host: $(hostname)"
+          uname -a
+          echo "---"
+          whoami
+          id
+
+      - name: Check base tools
+        run: |
+          git --version
+          curl --version | head -n1
+          jq --version
+
+      - name: Check Docker CLI (only if INSTALL_DOCKER_CLI=true in the image)
+        continue-on-error: true
+        run: docker version
+
+      - name: Write/read on the persistent work directory
+        run: |
+          echo "smoke-test-$(date -u +%s)" > smoke-test.txt
+          cat smoke-test.txt
+
+      - name: Result
+        run: echo "The self-hosted runner executed the job successfully."

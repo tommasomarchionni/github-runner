@@ -27,11 +27,23 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
+# Fail a RUN line if any command in a pipe fails, not just the last one —
+# needed below where the ICU package name is piped through several
+# filters before being installed.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # --- Base packages -----------------------------------------------------
 # Versions are intentionally not pinned: this image tracks Ubuntu's
 # rolling package repositories, and pinned versions age out of the
 # archive and break reproducible builds within weeks. Freshness is
 # preferred here over pinning; Dependabot still tracks the base image tag.
+#
+# libicu's SONAME bumps on almost every Ubuntu release (libicu74 on 24.04,
+# libicu78 on 26.04, ...), so a hardcoded package name breaks the very
+# next time Dependabot proposes a base image bump. Resolve the ICU runtime
+# package actually shipped by the base image's own repositories instead of
+# hardcoding a version — this keeps the build working across future Ubuntu
+# releases with no Dockerfile change required.
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -39,7 +51,6 @@ RUN apt-get update && \
         curl \
         git \
         jq \
-        libicu74 \
         sudo \
         tar \
         tzdata \
@@ -47,6 +58,10 @@ RUN apt-get update && \
         lsb-release \
         unzip \
         && \
+    icu_pkg="$(apt-cache search --names-only '^libicu[0-9]+$' | awk '{print $1}' | sort -V | tail -n1)" && \
+    [ -n "${icu_pkg}" ] || { echo 'No libicu<N> package found in apt cache' >&2; exit 1; } && \
+    echo "Resolved ICU runtime package: ${icu_pkg}" && \
+    apt-get install -y --no-install-recommends "${icu_pkg}" && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Optional Docker CLI (client only, uses the host's mounted socket) --

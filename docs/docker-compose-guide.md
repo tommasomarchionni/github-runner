@@ -1,5 +1,10 @@
 # Quick start with Docker Compose
 
+!!! note "Docker not installed yet?"
+    See [Platform setup](platform-setup.md) for macOS, Windows (WSL 2), and
+    Linux install instructions and OS-specific notes before running the
+    commands below.
+
 ```bash
 git clone https://github.com/tommasomarchionni/github-runner.git
 cd github-runner

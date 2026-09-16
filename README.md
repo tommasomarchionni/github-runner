@@ -47,18 +47,21 @@ docker compose -f docker-compose.prebuilt.yml up -d
 
 See the [Quick start guide](https://tommasomarchionni.github.io/github-runner/docker-compose-guide/)
 for details, and [PAT permissions](https://tommasomarchionni.github.io/github-runner/pat-permissions/)
-before creating your token.
+before creating your token. New to Docker on your OS? See
+[Platform setup for macOS, Windows, and Linux](https://tommasomarchionni.github.io/github-runner/platform-setup/).
 
 ## Documentation
 
 | Topic | Link |
 |---|---|
 | PAT permissions | [docs](https://tommasomarchionni.github.io/github-runner/pat-permissions/) |
+| Platform setup (macOS, Windows, Linux) | [docs](https://tommasomarchionni.github.io/github-runner/platform-setup/) |
 | Prebuilt image (GHCR) | [docs](https://tommasomarchionni.github.io/github-runner/prebuilt-image/) |
 | Docker Compose | [docs](https://tommasomarchionni.github.io/github-runner/docker-compose-guide/) |
-| Dokploy | [docs](https://tommasomarchionni.github.io/github-runner/dokploy/) |
+| Dokploy (all deployment modes) | [docs](https://tommasomarchionni.github.io/github-runner/dokploy/) |
 | Plain Docker | [docs](https://tommasomarchionni.github.io/github-runner/docker-plain/) |
-| Environment variables | [docs](https://tommasomarchionni.github.io/github-runner/environment-variables/) |
+| Environment variables (full reference) | [docs](https://tommasomarchionni.github.io/github-runner/environment-variables/) |
+| Labels and runner groups | [docs](https://tommasomarchionni.github.io/github-runner/labels-and-groups/) |
 | Persistence and self-healing | [docs](https://tommasomarchionni.github.io/github-runner/persistence/) |
 | Security | [docs](https://tommasomarchionni.github.io/github-runner/security/) |
 | Testing and CI | [docs](https://tommasomarchionni.github.io/github-runner/testing/) |

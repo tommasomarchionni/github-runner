@@ -40,20 +40,37 @@ runner" page to copy a token by hand.
 The PAT is never written to disk: it only lives as an environment variable
 of the container and is used on the fly for API calls.
 
+## Who this is for
+
+Anyone who wants self-hosted GitHub Actions runners without babysitting
+them: no copy-pasting a fresh registration token every hour, no manual
+re-registration after a redeploy, and no third-party runner image of
+unknown provenance. If you've ever had a self-hosted runner silently go
+"Offline" after a host reboot or a container recreate, that's the exact
+problem this project removes.
+
 ## Where to start
+
+1. **Read this first**: [PAT permissions](pat-permissions.md) — by far the
+   most common source of a failed first deploy.
+2. **Install Docker** if you haven't already: [Platform setup for macOS, Windows, and Linux](platform-setup.md).
+3. **Pick how you'll run it**:
 
 <div class="grid cards" markdown>
 
-- **Start here**: configure the [PAT permissions](pat-permissions.md) —
-  this is the number one source of problems.
 - **Fastest path**: pull the [prebuilt image](prebuilt-image.md) from GHCR,
   no build step required.
-- **Docker Compose** locally or on a server: see the
+- **Docker Compose** locally or on your own server: see the
   [Docker Compose guide](docker-compose-guide.md).
-- **Dokploy**: see the dedicated [Dokploy guide](dokploy.md).
+- **Dokploy**: see the dedicated [Dokploy guide](dokploy.md), covering
+  every deployment mode Dokploy supports.
 - **Plain Docker** without Compose: see [Plain Docker](docker-plain.md).
 
 </div>
+
+4. **Configure it**: every runtime option is an
+   [environment variable](environment-variables.md) — there is no other
+   config file to edit.
 
 ## Repository
 

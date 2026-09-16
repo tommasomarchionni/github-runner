@@ -1,5 +1,10 @@
 # Plain Docker (without Compose)
 
+!!! note "Docker not installed yet?"
+    See [Platform setup](platform-setup.md) for macOS, Windows (WSL 2), and
+    Linux install instructions and OS-specific notes before running the
+    commands below.
+
 ```bash
 docker build -t github-runner:local \
   --build-arg RUNNER_VERSION=2.337.0 \

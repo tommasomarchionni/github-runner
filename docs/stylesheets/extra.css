@@ -1,0 +1,11 @@
+/* Never break variable/option names (inline code) mid-word inside table
+ * cells. Material for MkDocs's default table wrapping breaks long
+ * UPPER_SNAKE_CASE identifiers (env var names, build args) at an arbitrary
+ * character instead of at a whole-word boundary, which reads as broken
+ * text. `md-typeset table:not([class])` already has `overflow:auto` and
+ * `max-width:100%` from the theme, so keeping identifiers unbroken just
+ * makes that column horizontally scrollable on very narrow viewports
+ * instead of visually splitting a variable name across two lines. */
+.md-typeset table code {
+  white-space: nowrap;
+}

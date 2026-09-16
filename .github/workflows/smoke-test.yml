@@ -7,18 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       labels:
-        description: "Labels to require (comma-separated, in addition to self-hosted)"
+        description: 'Runner labels to target, as a JSON array, e.g. ["self-hosted","linux","x64","ci"]'
         required: false
-        default: "self-hosted"
+        default: '["self-hosted"]'
 
 permissions:
   contents: read
 
 jobs:
   smoke-test:
-    # If you set custom RUNNER_LABELS, adjust the requested tags here,
-    # e.g.: runs-on: [self-hosted, linux, x64, ci]
-    runs-on: ${{ fromJSON(format('["{0}"]', join(split(inputs.labels, ','), '","'))) }}
+    # GitHub Actions expressions have no string-split function, so the
+    # input must already be a JSON array literal (see the input
+    # description above) rather than a comma-separated string.
+    runs-on: ${{ fromJSON(inputs.labels) }}
     timeout-minutes: 10
     steps:
       - name: Checkout

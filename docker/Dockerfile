@@ -28,11 +28,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=C.UTF-8
 
 # --- Base packages -----------------------------------------------------
-# hadolint ignore=DL3008
 # Versions are intentionally not pinned: this image tracks Ubuntu's
 # rolling package repositories, and pinned versions age out of the
 # archive and break reproducible builds within weeks. Freshness is
 # preferred here over pinning; Dependabot still tracks the base image tag.
+# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -50,11 +50,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Optional Docker CLI (client only, uses the host's mounted socket) --
-# hadolint ignore=DL3008,SC1091
 # DL3008: same rolling-repository rationale as above.
 # SC1091: `. /etc/os-release` is sourced from the target filesystem at
 # build time, not from a file hadolint can statically follow — a known,
 # harmless false positive for this exact pattern.
+# hadolint ignore=DL3008,SC1091
 RUN if [ "$INSTALL_DOCKER_CLI" = "true" ]; then \
         install -m 0755 -d /etc/apt/keyrings && \
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \

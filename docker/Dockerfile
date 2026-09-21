@@ -115,11 +115,11 @@ RUN set -eu; \
 COPY --chown=runner:runner entrypoint.sh /home/runner/entrypoint.sh
 RUN chmod +x /home/runner/entrypoint.sh
 
-USER runner
+USER 1001
 WORKDIR ${RUNNER_HOME}
 
 # Fail the container early if the runner process dies (used by `docker ps`/orchestrators).
 HEALTHCHECK --interval=60s --timeout=10s --start-period=90s --retries=3 \
-    CMD test -f "${RUNNER_HOME}/.runner" || exit 1
+    CMD ["/bin/bash", "-c", "test -f \"${RUNNER_HOME}/.runner\""]
 
 ENTRYPOINT ["/home/runner/entrypoint.sh"]

@@ -71,6 +71,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
+            INSTALL_DOCKER_CLI=true
             ${{ inputs.runner_version != '' && format('RUNNER_VERSION={0}', inputs.runner_version) || '' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

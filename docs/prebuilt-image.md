@@ -18,7 +18,10 @@ Available tags:
 | `vX.Y.Z`, `X.Y`, `X` | on a pushed git tag `vX.Y.Z` |
 | `sha-<short-sha>` | every build, for exact reproducibility |
 
-The image is public and requires no authentication to pull.
+The image is public and requires no authentication to pull. The Docker
+CLI (client only) is **included by default** — see
+[Docker inside workflows](docker-in-workflow.md) to enable it with a
+single socket mount.
 
 ## Using it with Docker Compose
 

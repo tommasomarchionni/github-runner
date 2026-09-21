@@ -11,7 +11,7 @@ services:
         RUNNER_VERSION: ${RUNNER_VERSION:-2.337.0}
         # Leave empty to auto-detect from the build platform (see docker/Dockerfile).
         RUNNER_ARCH: ${RUNNER_ARCH:-}
-        INSTALL_DOCKER_CLI: ${INSTALL_DOCKER_CLI:-false}
+        INSTALL_DOCKER_CLI: ${INSTALL_DOCKER_CLI:-true}
     image: ${RUNNER_IMAGE_NAME:-github-runner}:${RUNNER_IMAGE_TAG:-local}
     container_name: ${RUNNER_NAME:-github-runner-01}
     restart: unless-stopped

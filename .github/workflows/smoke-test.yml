@@ -39,8 +39,7 @@ jobs:
           curl --version | head -n1
           jq --version
 
-      - name: Check Docker CLI (only if INSTALL_DOCKER_CLI=true in the image)
-        continue-on-error: true
+      - name: Check Docker CLI
         run: docker version
 
       - name: Write/read on the persistent work directory

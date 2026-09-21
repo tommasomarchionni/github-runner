@@ -59,6 +59,8 @@ jobs:
           push: false
           load: true
           tags: github-runner:ci
+          build-args: |
+            INSTALL_DOCKER_CLI=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Verify the image starts and fails gracefully without a PAT
@@ -66,3 +68,6 @@ jobs:
           set +e
           docker run --rm github-runner:ci 2>&1 | tee /tmp/out.log
           grep -q "GITHUB_PAT is required" /tmp/out.log
+      - name: Verify Docker CLI is present in the image
+        run: |
+          docker run --rm --entrypoint docker github-runner:ci version --format '{{.Client.Version}}'

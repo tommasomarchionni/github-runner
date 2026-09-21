@@ -19,7 +19,7 @@ ARG RUNNER_ARCH=""
 ARG TARGETARCH
 # Set to "true" to install the Docker CLI so the runner can talk to a
 # Docker socket mounted from the host (see "Docker inside workflows" docs).
-ARG INSTALL_DOCKER_CLI=false
+ARG INSTALL_DOCKER_CLI=true
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_VERSION=${RUNNER_VERSION} \

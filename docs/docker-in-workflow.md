@@ -1,26 +1,46 @@
 # Docker inside workflows
 
-If a workflow needs to run `docker build`/`docker compose`/test containers:
+The Docker CLI (client only, no daemon) is **bundled in the prebuilt GHCR
+image by default** — you do not need to rebuild the image or set any
+build argument.
 
-1. Rebuild the image with `INSTALL_DOCKER_CLI=true` (adds only the Docker
-   client, not a daemon).
-2. In `docker-compose.yml`, uncomment:
+To let the runner talk to a Docker daemon, simply mount the host socket:
 
-   ```yaml
-   volumes:
-     - /var/run/docker.sock:/var/run/docker.sock
-   ```
+```yaml
+# docker-compose.yml or docker-compose.prebuilt.yml
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+```
 
-This grants the runner **full access to the host's Docker daemon**
-(equivalent to root on the host). Only do this if you truly need it, and
-**never** on a runner that executes jobs from untrusted external pull
-requests.
+That's all. Uncomment that line, recreate the container, and your
+workflows can run `docker build`, `docker compose`, `docker run`, etc.
 
-## Safer alternative
+> **Security note** — mounting `/var/run/docker.sock` grants the runner
+> **full access to the host's Docker daemon**, which is effectively
+> equivalent to root on the host. Only do this on runners that execute
+> jobs from trusted sources, and **never** on runners that process
+> untrusted external pull requests.
 
-If you only need to build and test containers without needing the host's
-existing images/network, consider Docker-in-Docker (`docker:dind` as a
-sidecar) instead of mounting the host socket. This keeps the runner's
-Docker environment isolated from the host, at the cost of extra setup and
-resource usage. This repository does not ship a DinD sidecar by default,
-but you can add one to `docker-compose.yml` if your workflows need it.
+## Opting out of the bundled CLI
+
+If you want a smaller image without the Docker CLI (e.g. to reduce
+attack surface on a runner that will never use Docker), rebuild locally
+with `INSTALL_DOCKER_CLI=false`:
+
+```bash
+# .env
+INSTALL_DOCKER_CLI=false
+docker compose build
+```
+
+The prebuilt GHCR image always includes the CLI.
+
+## Safer alternative (Docker-in-Docker)
+
+If you only need to build and test containers without touching the
+host's existing images or network, consider Docker-in-Docker
+(`docker:dind` as a sidecar) instead of mounting the host socket. This
+keeps the runner's Docker environment fully isolated from the host, at
+the cost of extra setup and resource usage. This repository does not
+ship a DinD sidecar by default, but you can add one to
+`docker-compose.yml` if your workflows need it.

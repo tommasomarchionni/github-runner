@@ -31,9 +31,14 @@ jobs:
           python-version: "3.12"
 
       - name: Install MkDocs Material
+        env:
+          PIP_ROOT_USER_ACTION: ignore
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
         run: pip install -r docs/requirements.txt
 
       - name: Build site
+        env:
+          NO_MKDOCS_2_WARNING: "true"
         run: mkdocs build --strict
 
       - name: Upload Pages artifact

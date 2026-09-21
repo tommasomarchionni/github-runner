@@ -27,8 +27,9 @@ This runs, entirely inside Docker (nothing to install on your machine):
 Every push to `main` and every pull request triggers
 [`.github/workflows/ci.yml`](https://github.com/tommasomarchionni/github-runner/blob/main/.github/workflows/ci.yml),
 which runs shellcheck, hadolint, the bats suite, and a Docker build (with
-a smoke check that the container fails with a clear message when
-`GITHUB_PAT` is missing) as separate parallel/sequential jobs. All of this
+smoke checks that the container fails with a clear message when
+`GITHUB_PAT` is missing and that bundled tools such as the Docker CLI and
+`iproute2` are present) as separate parallel/sequential jobs. All of this
 runs on GitHub-hosted runners, and GitHub Actions minutes are free and
 unlimited for public repositories.
 
@@ -44,7 +45,8 @@ on tagged releases — see [Prebuilt image](prebuilt-image.md).
 is a manually triggered workflow you can run against your **own** live
 runner after deploying it, to confirm it registered correctly and can
 actually execute a job (checks out the repo, prints environment info,
-verifies base tools, writes to the persistent work directory).
+verifies base tools including `ip`, writes to the persistent work
+directory).
 
 ## Documentation
 

@@ -101,7 +101,7 @@ time (`--build-arg` or the Compose `build.args:` block).
 |---|---|---|
 | `RUNNER_VERSION` | `2.337.0` | Version of the official `actions/runner` tarball to install |
 | `RUNNER_ARCH` | auto-detected from `TARGETARCH` | Tarball architecture (`x64`, `arm64`); leave empty unless cross-building for a different target than your build host, see [Platform setup](platform-setup.md#architecture-reference) |
-| `INSTALL_DOCKER_CLI` | `true` | Bundles the Docker CLI (client only) in the image, see [Docker inside workflows](docker-in-workflow.md) |
+| `INSTALL_DOCKER_CLI` | `true` | Bundles the Docker CLI (client only) in addition to the default base tooling (`git`, `curl`, `jq`, `ip`), see [Docker inside workflows](docker-in-workflow.md) |
 
 ## Where these are already wired up for you
 

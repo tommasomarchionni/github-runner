@@ -19,8 +19,16 @@ docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_entrypoin
 echo "==> Docker image build"
 docker build -t github-runner:test -f docker/Dockerfile docker
 
+echo "==> Verify bundled tools in the image"
+docker run --rm --entrypoint docker github-runner:test --version
+docker run --rm --entrypoint ip github-runner:test -V
+
 echo "==> Docs site build (mkdocs --strict)"
-docker run --rm -v "$(pwd)":/docs -w /docs python:3.12-slim bash -c \
+docker run --rm \
+  -e PIP_ROOT_USER_ACTION=ignore \
+  -e PIP_DISABLE_PIP_VERSION_CHECK=1 \
+  -e NO_MKDOCS_2_WARNING=true \
+  -v "$(pwd)":/docs -w /docs python:3.12-slim bash -c \
   "pip install --quiet -r docs/requirements.txt && mkdocs build --strict"
 
 echo

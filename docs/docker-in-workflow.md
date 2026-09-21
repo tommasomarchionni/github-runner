@@ -1,8 +1,9 @@
 # Docker inside workflows
 
 The Docker CLI (client only, no daemon) is **bundled in the prebuilt GHCR
-image by default** — you do not need to rebuild the image or set any
-build argument.
+image by default** — together with the standard runner-side base tools
+already baked into the image, including `iproute2` (`ip`). You do not
+need to rebuild the image or set any build argument.
 
 To let the runner talk to a Docker daemon, simply mount the host socket:
 

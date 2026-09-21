@@ -38,6 +38,7 @@ jobs:
           git --version
           curl --version | head -n1
           jq --version
+          ip -V
 
       - name: Check Docker CLI
         run: docker version

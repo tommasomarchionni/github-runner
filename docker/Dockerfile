@@ -78,7 +78,7 @@ RUN if [ "$INSTALL_DOCKER_CLI" = "true" ]; then \
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${VERSION_CODENAME} stable" \
             > /etc/apt/sources.list.d/docker.list && \
         apt-get update && \
-        apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin buildx && \
+        apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin docker-buildx-plugin && \
         rm -rf /var/lib/apt/lists/* ; \
     fi
 

@@ -70,4 +70,4 @@ jobs:
           grep -q "GITHUB_PAT is required" /tmp/out.log
       - name: Verify Docker CLI is present in the image
         run: |
-          docker run --rm --entrypoint docker github-runner:ci version
+          docker run --rm --entrypoint docker github-runner:ci --version

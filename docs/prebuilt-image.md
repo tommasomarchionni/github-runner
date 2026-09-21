@@ -19,9 +19,10 @@ Available tags:
 | `sha-<short-sha>` | every build, for exact reproducibility |
 
 The image is public and requires no authentication to pull. The Docker
-CLI (client only) is **included by default** — see
-[Docker inside workflows](docker-in-workflow.md) to enable it with a
-single socket mount.
+CLI (client only) is **included by default**, and the base image also
+ships with common runner-side troubleshooting tools such as `iproute2`
+(`ip`) — see [Docker inside workflows](docker-in-workflow.md) to enable
+the Docker CLI with a single socket mount.
 
 ## Using it with Docker Compose
 
@@ -65,8 +66,8 @@ RUNNER_IMAGE_TAG=v1.2.0
 
 ## Building it yourself instead
 
-If you need a custom modification (extra packages baked into the image,
-a different `RUNNER_VERSION` pin, etc.), use the local-build
+If you need a custom modification (extra packages beyond the built-in
+tooling, a different `RUNNER_VERSION` pin, etc.), use the local-build
 `docker-compose.yml` described in
 [Quick start with Docker Compose](docker-compose-guide.md) instead of the
 prebuilt image.

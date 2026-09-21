@@ -50,6 +50,7 @@ RUN apt-get update && \
         ca-certificates \
         curl \
         git \
+        iproute2 \
         jq \
         sudo \
         tar \

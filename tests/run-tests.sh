@@ -19,6 +19,10 @@ docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_entrypoin
 echo "==> Docker image build"
 docker build -t github-runner:test -f docker/Dockerfile docker
 
+echo "==> Verify bundled tools in the image"
+docker run --rm --entrypoint docker github-runner:test --version
+docker run --rm --entrypoint ip github-runner:test -V
+
 echo "==> Docs site build (mkdocs --strict)"
 docker run --rm -v "$(pwd)":/docs -w /docs python:3.12-slim bash -c \
   "pip install --quiet -r docs/requirements.txt && mkdocs build --strict"

@@ -8,7 +8,7 @@
 #     --build-arg RUNNER_VERSION=2.337.0 \
 #     -f docker/Dockerfile .
 #
-FROM ubuntu:26.04
+FROM ubuntu:24.04
 
 ARG RUNNER_VERSION=2.337.0
 # Leave empty to auto-detect from the build platform (recommended, and
@@ -39,7 +39,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # preferred here over pinning; Dependabot still tracks the base image tag.
 #
 # libicu's SONAME bumps on almost every Ubuntu release (libicu74 on 24.04,
-# libicu78 on 26.04, ...), so a hardcoded package name breaks the very
+# libicu76 on 25.04, ...), so a hardcoded package name breaks the very
 # next time Dependabot proposes a base image bump. Resolve the ICU runtime
 # package actually shipped by the base image's own repositories instead of
 # hardcoding a version — this keeps the build working across future Ubuntu

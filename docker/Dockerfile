@@ -8,7 +8,7 @@
 #     --build-arg RUNNER_VERSION=2.337.0 \
 #     -f docker/Dockerfile .
 #
-FROM ubuntu:24.04
+FROM ubuntu:25.10
 
 ARG RUNNER_VERSION=2.337.0
 # Leave empty to auto-detect from the build platform (recommended, and

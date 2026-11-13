@@ -5,6 +5,23 @@ command-line tools to be there. This image bundles the ones that jobs and
 actions call most often, so the same workflow runs here without an
 "install it first" step, and leaves the rest to `setup-*` actions.
 
+## Base image: Ubuntu LTS
+
+The image is built on **Ubuntu 24.04 LTS**, the release behind
+`ubuntu-24.04`/`ubuntu-latest` on GitHub-hosted runners, and it stays on an
+LTS on purpose. The `setup-*` actions (`actions/setup-python`,
+`actions/setup-node`, …) and browser installers such as Playwright download
+prebuilt binaries published for the hosted-runner releases only. On an
+interim release they fail, for example:
+
+```text
+The version '3.12' with architecture 'x64' was not found for Ubuntu 25.10.
+```
+
+Dependabot is configured to ignore major bumps of the base image. Move to the
+next LTS by hand, once GitHub-hosted runners offer it, and run the
+[bundled tools test](testing.md#bundled-tools-test): it asserts the release.
+
 ## Always in the image
 
 | Tool | Typical use |

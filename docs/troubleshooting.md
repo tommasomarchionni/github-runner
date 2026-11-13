@@ -65,6 +65,15 @@ successfully registered with GitHub. Look for the
 `[entrypoint] Registering runner ...` line and any error immediately after
 it.
 
+## A `setup-*` action fails with "version ... was not found for Ubuntu ..."
+
+`actions/setup-python`, `actions/setup-node` and similar actions download
+prebuilt binaries that exist only for the Ubuntu LTS releases of
+GitHub-hosted runners. The error means the runner image is on an interim
+release (for example 25.10). Use an image built on Ubuntu 24.04 LTS — the
+current prebuilt image is — and redeploy the runner, see
+[Bundled tools](bundled-tools.md#base-image-ubuntu-lts).
+
 ## A workflow fails with `gh: command not found`
 
 The GitHub CLI is bundled in the image from the release that introduced the

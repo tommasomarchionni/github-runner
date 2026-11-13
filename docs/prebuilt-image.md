@@ -24,6 +24,8 @@ ships with common runner-side troubleshooting tools such as `iproute2`
 (`ip`) — see [Docker inside workflows](docker-in-workflow.md) to enable
 the Docker CLI with a single socket mount. The GitHub CLI (`gh`) is
 **included by default** too, see [GitHub CLI inside workflows](github-cli.md).
+The full list of what the image ships, and what it deliberately leaves
+to `setup-*` actions, is in [Bundled tools](bundled-tools.md).
 
 ## Using it with Docker Compose
 

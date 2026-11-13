@@ -7,8 +7,8 @@
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-echo "==> Shellcheck on docker/entrypoint.sh"
-docker run --rm -v "$(pwd)":/mnt -w /mnt koalaman/shellcheck:stable docker/entrypoint.sh
+echo "==> Shellcheck on docker/entrypoint.sh and tests/test_image_tools.sh"
+docker run --rm -v "$(pwd)":/mnt -w /mnt koalaman/shellcheck:stable docker/entrypoint.sh tests/test_image_tools.sh
 
 echo "==> Hadolint on docker/Dockerfile"
 docker run --rm -i hadolint/hadolint < docker/Dockerfile
@@ -22,6 +22,13 @@ docker build -t github-runner:test -f docker/Dockerfile docker
 echo "==> Verify bundled tools in the image"
 docker run --rm --entrypoint docker github-runner:test --version
 docker run --rm --entrypoint ip github-runner:test -V
+
+echo "==> Bundled tools, default image"
+tests/test_image_tools.sh github-runner:test full
+
+echo "==> Bundled tools, image without the build tools"
+docker build -t github-runner:test-slim --build-arg INSTALL_BUILD_TOOLS=false -f docker/Dockerfile docker
+tests/test_image_tools.sh github-runner:test-slim slim
 
 echo "==> Docs site build (mkdocs --strict)"
 docker run --rm \

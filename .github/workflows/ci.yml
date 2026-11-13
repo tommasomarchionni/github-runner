@@ -19,6 +19,11 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./docker"
+      - name: Lint the image tool test
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./tests"
+          ignore_names: test_entrypoint.bats
 
   hadolint:
     name: Hadolint (Dockerfile)
@@ -62,6 +67,7 @@ jobs:
           build-args: |
             INSTALL_DOCKER_CLI=true
             INSTALL_GH_CLI=true
+            INSTALL_BUILD_TOOLS=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Verify the image starts and fails gracefully without a PAT
@@ -75,3 +81,20 @@ jobs:
       - name: Verify iproute2 is present in the image
         run: |
           docker run --rm --entrypoint ip github-runner:ci -V
+      - name: Verify the bundled tools in the default image
+        run: tests/test_image_tools.sh github-runner:ci full
+      - name: Build the image without the build tools
+        uses: docker/build-push-action@v7
+        with:
+          context: ./docker
+          file: ./docker/Dockerfile
+          push: false
+          load: true
+          tags: github-runner:ci-slim
+          build-args: |
+            INSTALL_DOCKER_CLI=true
+            INSTALL_GH_CLI=true
+            INSTALL_BUILD_TOOLS=false
+          cache-from: type=gha
+      - name: Verify the image without the build tools
+        run: tests/test_image_tools.sh github-runner:ci-slim slim

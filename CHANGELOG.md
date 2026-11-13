@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Everyday tools of GitHub-hosted runners in the base image: `git-lfs`, `zip`,
+  `xz-utils`, `zstd`, `bzip2`, `file`, `wget`, `rsync` and an SSH client
+  (`openssh-client`). `zstd` lets `actions/cache` use its faster format.
+- C/C++ toolchain (`build-essential`) and system Python (`python3`, `venv`,
+  `pip`, `pipx`) bundled by default behind the `INSTALL_BUILD_TOOLS` build
+  argument (`true` by default, about 440 MB; set it to `false` for a smaller
+  image). `~/.local/bin` is on `PATH`, so tools installed with `pipx` are found.
+- `tests/test_image_tools.sh`: checks the bundled tools inside a built image,
+  for the default image and for one built without the build tools; run by
+  `tests/run-tests.sh` and by CI.
 - GitHub CLI (`gh`) bundled in the image by default (`INSTALL_GH_CLI` build
   argument, `true` by default): workflows that call `gh` no longer fail with
   "command not found" on this runner.

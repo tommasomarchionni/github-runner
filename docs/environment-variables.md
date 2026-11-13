@@ -103,6 +103,7 @@ time (`--build-arg` or the Compose `build.args:` block).
 | `RUNNER_ARCH` | auto-detected from `TARGETARCH` | Tarball architecture (`x64`, `arm64`); leave empty unless cross-building for a different target than your build host, see [Platform setup](platform-setup.md#architecture-reference) |
 | `INSTALL_DOCKER_CLI` | `true` | Bundles the Docker CLI (client only) in addition to the default base tooling (`git`, `curl`, `jq`, `ip`), see [Docker inside workflows](docker-in-workflow.md) |
 | `INSTALL_GH_CLI` | `true` | Bundles the GitHub CLI (`gh`), installed from GitHub's signed apt repository. Workflows authenticate it with `GH_TOKEN` (for example `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`). Set to `false` for a smaller image. |
+| `INSTALL_BUILD_TOOLS` | `true` | Bundles a C/C++ toolchain (`build-essential`) and a system Python (`python3`, `python3-venv`, `python3-pip`, `pipx`), see [Bundled tools](bundled-tools.md). Adds about 440 MB; set to `false` for a smaller image. |
 
 ## Where these are already wired up for you
 

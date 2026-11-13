@@ -23,12 +23,17 @@ ARG INSTALL_DOCKER_CLI=true
 # Set to "true" to install the GitHub CLI (`gh`), which workflows commonly use to
 # call the GitHub API, comment on pull requests or merge them.
 ARG INSTALL_GH_CLI=true
+# Set to "true" to install a C/C++ toolchain and a system Python (python3, venv,
+# pip, pipx): what native npm/pip packages and helper scripts expect to find,
+# as they do on GitHub-hosted runners.
+ARG INSTALL_BUILD_TOOLS=true
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_VERSION=${RUNNER_VERSION} \
     RUNNER_HOME=/home/runner/actions-runner \
     LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8
+    LC_ALL=C.UTF-8 \
+    PATH=/home/runner/.local/bin:${PATH}
 
 # Fail a RUN line if any command in a pipe fails, not just the last one —
 # needed below where the ICU package name is piped through several
@@ -50,17 +55,26 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        bzip2 \
         ca-certificates \
         curl \
+        file \
         git \
+        git-lfs \
+        gnupg \
         iproute2 \
         jq \
+        lsb-release \
+        openssh-client \
+        rsync \
         sudo \
         tar \
         tzdata \
-        gnupg \
-        lsb-release \
         unzip \
+        wget \
+        xz-utils \
+        zip \
+        zstd \
         && \
     icu_pkg="$(apt-cache search --names-only '^libicu[0-9]+$' | awk '{print $1}' | sort -V | tail -n1)" && \
     [ -n "${icu_pkg}" ] || { echo 'No libicu<N> package found in apt cache' >&2; exit 1; } && \
@@ -101,6 +115,24 @@ RUN if [ "$INSTALL_GH_CLI" = "true" ]; then \
         apt-get install -y --no-install-recommends gh && \
         rm -rf /var/lib/apt/lists/* && \
         gh --version ; \
+    fi
+
+# --- Optional build tools: C/C++ toolchain and system Python --------------
+# Needed when an npm or pip package has no prebuilt binary and compiles on
+# install, and by scripts that call `python3` without a setup action.
+# DL3008: same rolling-repository rationale as above.
+# hadolint ignore=DL3008
+RUN if [ "$INSTALL_BUILD_TOOLS" = "true" ]; then \
+        apt-get update && \
+        apt-get install -y --no-install-recommends \
+            build-essential \
+            pipx \
+            python3 \
+            python3-pip \
+            python3-venv \
+            && \
+        rm -rf /var/lib/apt/lists/* && \
+        gcc --version && python3 --version ; \
     fi
 
 # --- Unprivileged runner user -------------------------------------------

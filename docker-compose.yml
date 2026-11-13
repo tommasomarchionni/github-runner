@@ -13,6 +13,7 @@ services:
         RUNNER_ARCH: ${RUNNER_ARCH:-}
         INSTALL_DOCKER_CLI: ${INSTALL_DOCKER_CLI:-true}
         INSTALL_GH_CLI: ${INSTALL_GH_CLI:-true}
+        INSTALL_BUILD_TOOLS: ${INSTALL_BUILD_TOOLS:-true}
     image: ${RUNNER_IMAGE_NAME:-github-runner}:${RUNNER_IMAGE_TAG:-local}
     container_name: ${RUNNER_NAME:-github-runner-01}
     restart: unless-stopped

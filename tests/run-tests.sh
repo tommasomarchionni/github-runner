@@ -16,6 +16,9 @@ docker run --rm -i hadolint/hadolint < docker/Dockerfile
 echo "==> Unit tests (bats) on docker/entrypoint.sh"
 docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_entrypoint.bats
 
+echo "==> Base image rule (bats): Ubuntu LTS in the Dockerfile, Dependabot ignore rule"
+docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_base_image.bats
+
 echo "==> Docker image build"
 docker build -t github-runner:test -f docker/Dockerfile docker
 

@@ -17,6 +17,10 @@ This runs, entirely inside Docker (nothing to install on your machine):
    functions (`resolve_scope`, `api_scope_path`, `config_url`,
    `build_labels_arg`, self-healing defaults, ...) without starting a real
    runner or contacting the GitHub API.
+   A second suite (`tests/test_base_image.bats`) reads the repository files
+   and checks that the Dockerfile builds on an Ubuntu LTS and that Dependabot
+   ignores major and minor bumps of the base image (see
+   [Base image](bundled-tools.md#base-image-ubuntu-lts)).
 4. A full **image build** (`docker build`), catching any Dockerfile
    regression.
 5. A **strict docs build** (`mkdocs build --strict`), catching broken

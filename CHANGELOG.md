@@ -12,8 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Base image back to Ubuntu 24.04 LTS, the release GitHub-hosted runners use.
   A Dependabot bump to the interim 25.10 release made `actions/setup-python`
   (and any other `setup-*` action without a cached tool) fail with "The version
-  ... was not found for Ubuntu 25.10". Dependabot now ignores major bumps of
-  the base image, and the image test asserts the LTS.
+  ... was not found for Ubuntu 25.10". Dependabot now ignores major and minor
+  bumps of the base image (24.04 → 25.10 and 24.04 → 24.10 are both interim
+  releases), a test checks that rule, and the image test asserts the LTS.
 
 ### Added
 

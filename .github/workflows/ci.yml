@@ -23,7 +23,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./tests"
-          ignore_names: test_entrypoint.bats
+          ignore_names: test_entrypoint.bats test_base_image.bats
 
   hadolint:
     name: Hadolint (Dockerfile)
@@ -47,6 +47,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends bats
       - name: Run entrypoint unit tests
         run: bats tests/test_entrypoint.bats
+      - name: Run base image rule tests
+        run: bats tests/test_base_image.bats
 
   build:
     name: Build Docker image

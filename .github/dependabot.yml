@@ -17,3 +17,10 @@ updates:
     labels: ["dependencies", "docker"]
     commit-message:
       prefix: "chore(deps)"
+    # The base image stays on the Ubuntu LTS that GitHub-hosted runners use:
+    # an interim release (24.04 -> 25.10) breaks the setup-* actions, which only
+    # have prebuilt binaries for the hosted-runner LTS releases. Moving to the
+    # next LTS is a deliberate, manual change (see docs/bundled-tools.md).
+    ignore:
+      - dependency-name: "ubuntu"
+        update-types: ["version-update:semver-major"]

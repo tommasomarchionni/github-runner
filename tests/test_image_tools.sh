@@ -47,6 +47,10 @@ expect_ok() {
 for tool in git git-lfs curl wget jq tar zip unzip xz zstd bzip2 file rsync ssh ip sudo; do
     expect_present "${tool}"
 done
+# The base must be the Ubuntu LTS of GitHub-hosted runners: setup-* actions have
+# no prebuilt binaries for interim releases.
+expect_ok "the base image is Ubuntu 24.04 LTS" \
+    '. /etc/os-release && [ "${ID}" = ubuntu ] && [ "${VERSION_ID}" = 24.04 ]'
 expect_ok "runs as the unprivileged runner user" '[ "$(id -un)" = runner ]'
 expect_ok "the local bin directory of the runner user is on PATH" 'case ":${PATH}:" in *":/home/runner/.local/bin:"*) ;; *) exit 1 ;; esac'
 expect_ok "zip and unzip round-trip a file" \

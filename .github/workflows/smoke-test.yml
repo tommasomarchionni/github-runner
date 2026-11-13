@@ -46,6 +46,16 @@ jobs:
       - name: Check GitHub CLI
         run: gh --version
 
+      - name: Check archive, transfer and build tools
+        run: |
+          for tool in git-lfs zip unzip xz zstd bzip2 file wget rsync ssh; do
+            command -v "$tool" >/dev/null || { echo "missing: $tool" >&2; exit 1; }
+          done
+          # Present unless the image was built with INSTALL_BUILD_TOOLS=false.
+          for tool in gcc make python3 pipx; do
+            command -v "$tool" >/dev/null && "$tool" --version | head -n1 || echo "not bundled: $tool"
+          done
+
       - name: Write/read on the persistent work directory
         run: |
           echo "smoke-test-$(date -u +%s)" > smoke-test.txt

@@ -22,8 +22,10 @@ without ever copying a temporary registration token by hand.
   container is destroyed and recreated
 - Fully configurable via environment variables: repo/org scope, labels,
   runner group, ephemeral mode, GitHub Enterprise Server
-- Useful base tooling baked in: Git, curl, jq, `ip`, optional Docker CLI and
-  GitHub CLI (`gh`)
+- The everyday tooling of GitHub-hosted runners baked in: Git and Git LFS,
+  curl, wget, jq, zip/unzip, xz, zstd, rsync, an SSH client, `ip`, plus the
+  optional Docker CLI, GitHub CLI (`gh`), C/C++ toolchain and system Python —
+  see [Bundled tools](docs/bundled-tools.md)
 - Graceful shutdown: deregisters itself from GitHub on stop
 - Prebuilt multi-arch image published to GHCR, or build it yourself
 - Tested: shellcheck, hadolint, bats unit tests, automated CI build

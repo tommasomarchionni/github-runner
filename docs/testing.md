@@ -39,6 +39,22 @@ unlimited for public repositories.
 builds and pushes the multi-arch image to GHCR on every push to `main` and
 on tagged releases — see [Prebuilt image](prebuilt-image.md).
 
+## Bundled tools test
+
+[`tests/test_image_tools.sh`](https://github.com/tommasomarchionni/github-runner/blob/main/tests/test_image_tools.sh)
+runs inside a built image, as the unprivileged `runner` user, and checks
+that every bundled tool is there and works (a zip round trip, zstd and xz
+archives, a Python virtual environment, a compiled C program):
+
+```bash
+tests/test_image_tools.sh github-runner:test full   # default build arguments
+tests/test_image_tools.sh github-runner:test-slim slim   # INSTALL_BUILD_TOOLS=false
+```
+
+`slim` also asserts that the toolchain and Python are **not** in the image,
+so the build argument is proven to work in both directions. `run-tests.sh`
+and CI build and check both variants.
+
 ## End-to-end smoke test
 
 [`.github/workflows/smoke-test.yml`](https://github.com/tommasomarchionni/github-runner/blob/main/.github/workflows/smoke-test.yml)

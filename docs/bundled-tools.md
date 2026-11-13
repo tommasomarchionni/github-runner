@@ -18,9 +18,13 @@ interim release they fail, for example:
 The version '3.12' with architecture 'x64' was not found for Ubuntu 25.10.
 ```
 
-Dependabot is configured to ignore major bumps of the base image. Move to the
-next LTS by hand, once GitHub-hosted runners offer it, and run the
-[bundled tools test](testing.md#bundled-tools-test): it asserts the release.
+Dependabot is configured to ignore major and minor bumps of the base image:
+Ubuntu tags are `YY.MM`, so both `24.04 → 25.10` and `24.04 → 24.10` look like
+ordinary version bumps and both land on an interim release. An interim release
+also loses its package archive nine months after it ships, and from then on the
+image no longer builds. Move to the next LTS by hand, once GitHub-hosted
+runners offer it, and run the [bundled tools test](testing.md#bundled-tools-test):
+it asserts the release.
 
 ## Always in the image
 

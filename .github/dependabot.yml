@@ -17,10 +17,15 @@ updates:
     labels: ["dependencies", "docker"]
     commit-message:
       prefix: "chore(deps)"
-    # The base image stays on the Ubuntu LTS that GitHub-hosted runners use:
-    # an interim release (24.04 -> 25.10) breaks the setup-* actions, which only
-    # have prebuilt binaries for the hosted-runner LTS releases. Moving to the
-    # next LTS is a deliberate, manual change (see docs/bundled-tools.md).
+    # The base image stays on the Ubuntu LTS that GitHub-hosted runners use.
+    # Ubuntu tags are YY.MM: for Dependabot 24.04 -> 25.10 is a major bump and
+    # 24.04 -> 24.10 a minor one, and both land on an interim release. Interim
+    # releases break the setup-* actions (prebuilt binaries exist only for the
+    # hosted-runner LTS releases) and lose their package archive after nine
+    # months. Moving to the next LTS is a deliberate, manual change (see
+    # docs/bundled-tools.md); digest updates of the current tag still arrive.
     ignore:
       - dependency-name: "ubuntu"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"

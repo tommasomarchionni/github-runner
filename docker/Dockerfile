@@ -14,7 +14,7 @@
 # so on an interim release (25.04, 25.10) they fail with "version not found".
 # Dependabot is told to leave major bumps of this image alone; move to the next
 # LTS by hand once GitHub-hosted runners offer it.
-FROM ubuntu:24.04
+FROM ubuntu:24.10
 
 ARG RUNNER_VERSION=2.337.0
 # Leave empty to auto-detect from the build platform (recommended, and

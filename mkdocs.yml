@@ -76,6 +76,7 @@ nav:
       - Labels and runner groups: labels-and-groups.md
       - Ephemeral runners: ephemeral.md
       - Docker inside workflows: docker-in-workflow.md
+      - GitHub CLI inside workflows: github-cli.md
   - Reliability:
       - Persistence and self-healing: persistence.md
       - Graceful shutdown: shutdown.md

@@ -65,6 +65,19 @@ successfully registered with GitHub. Look for the
 `[entrypoint] Registering runner ...` line and any error immediately after
 it.
 
+## A workflow fails with `gh: command not found`
+
+The GitHub CLI is bundled in the image from the release that introduced the
+`INSTALL_GH_CLI` build argument. A runner deployed before that keeps running
+its old image until it is redeployed:
+
+- prebuilt image: pull the new tag and recreate the container, see
+  [Updating a running runner](github-cli.md#updating-a-running-runner);
+- image built from source: rebuild it (`INSTALL_GH_CLI` defaults to `true`).
+
+Then check it with the [smoke test](testing.md#end-to-end-smoke-test), which
+runs `gh --version` on the runner.
+
 ## Still stuck?
 
 Open an issue with your (redacted) logs and configuration using the

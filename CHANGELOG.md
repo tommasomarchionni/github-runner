@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- GitHub CLI (`gh`) bundled in the image by default (`INSTALL_GH_CLI` build
+  argument, `true` by default): workflows that call `gh` no longer fail with
+  "command not found" on this runner.
 - Initial release: containerized self-hosted GitHub Actions runner built on
   the official `actions/runner` tarball.
 - PAT-based authentication: registration and removal tokens are minted on

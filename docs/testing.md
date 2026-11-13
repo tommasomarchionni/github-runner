@@ -45,8 +45,8 @@ on tagged releases — see [Prebuilt image](prebuilt-image.md).
 is a manually triggered workflow you can run against your **own** live
 runner after deploying it, to confirm it registered correctly and can
 actually execute a job (checks out the repo, prints environment info,
-verifies base tools including `ip`, writes to the persistent work
-directory).
+verifies base tools including `ip`, the Docker CLI and the GitHub CLI,
+writes to the persistent work directory).
 
 ## Documentation
 

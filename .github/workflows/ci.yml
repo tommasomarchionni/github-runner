@@ -61,6 +61,7 @@ jobs:
           tags: github-runner:ci
           build-args: |
             INSTALL_DOCKER_CLI=true
+            INSTALL_GH_CLI=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Verify the image starts and fails gracefully without a PAT

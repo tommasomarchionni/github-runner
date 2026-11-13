@@ -43,6 +43,9 @@ jobs:
       - name: Check Docker CLI
         run: docker version
 
+      - name: Check GitHub CLI
+        run: gh --version
+
       - name: Write/read on the persistent work directory
         run: |
           echo "smoke-test-$(date -u +%s)" > smoke-test.txt

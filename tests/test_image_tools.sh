@@ -47,6 +47,14 @@ expect_ok() {
 for tool in git git-lfs curl wget jq tar zip unzip xz zstd bzip2 file rsync ssh ip sudo; do
     expect_present "${tool}"
 done
+# uv is bundled whatever the Python build argument says (INSTALL_UV, default true), at the version
+# the Dockerfile pins: a project that pins the same uv in its own CI relies on exactly that one.
+uv_version="$(sed -n 's/^ARG UV_VERSION=//p' "$(dirname "${BASH_SOURCE[0]}")/../docker/Dockerfile")"
+[ -n "${uv_version}" ] || { echo "UV_VERSION not found in docker/Dockerfile" >&2; exit 2; }
+expect_present uv
+expect_present uvx
+expect_ok "uv is version ${uv_version}, run as the runner user" "uv --version | grep -q '^uv ${uv_version} '"
+expect_ok "uv lives in /usr/local/bin, not in a user directory" '[ "$(command -v uv)" = /usr/local/bin/uv ]'
 # The base must be the Ubuntu LTS of GitHub-hosted runners: setup-* actions have
 # no prebuilt binaries for interim releases.
 expect_ok "the base image is Ubuntu 24.04 LTS" \

@@ -33,6 +33,14 @@ ARG INSTALL_GH_CLI=true
 # pip, pipx): what native npm/pip packages and helper scripts expect to find,
 # as they do on GitHub-hosted runners.
 ARG INSTALL_BUILD_TOOLS=true
+# Set to "true" to install uv, the Python package and project manager, as the
+# official static binary. The version and the SHA-256 of each architecture's
+# archive are pinned (published by astral-sh/uv with the release, checked here
+# at build time): move the three values together to update it.
+ARG INSTALL_UV=true
+ARG UV_VERSION=0.13.3
+ARG UV_SHA256_AMD64=e4f169ec380f1793b898a6f1fcbacd22db25cf7ca0349a6e96ffb85b69998d04
+ARG UV_SHA256_ARM64=611ff684f193a84d2fdad29c5f12505d02ece94984c7c982cdde950eba5c95b9
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_VERSION=${RUNNER_VERSION} \
@@ -139,6 +147,27 @@ RUN if [ "$INSTALL_BUILD_TOOLS" = "true" ]; then \
             && \
         rm -rf /var/lib/apt/lists/* && \
         gcc --version && python3 --version ; \
+    fi
+
+# --- Optional uv (official static binary, pinned and verified) -------------
+# The release archive of astral-sh/uv for the build platform, checked against
+# the SHA-256 above before anything is extracted; `uv` and `uvx` go to
+# /usr/local/bin (root-owned, on every user's PATH), nothing else is kept. No
+# installer script and no pip: the build fails if the checksum does not match.
+RUN if [ "$INSTALL_UV" = "true" ]; then \
+        set -eu; \
+        case "${TARGETARCH}" in \
+            amd64) triple=x86_64-unknown-linux-gnu; sha="${UV_SHA256_AMD64}" ;; \
+            arm64) triple=aarch64-unknown-linux-gnu; sha="${UV_SHA256_ARM64}" ;; \
+            *) echo "Unsupported TARGETARCH='${TARGETARCH}' for uv (amd64|arm64)." >&2; exit 1 ;; \
+        esac; \
+        curl -fsSL --proto '=https' --tlsv1.2 -o /tmp/uv.tar.gz \
+            "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${triple}.tar.gz" && \
+        echo "${sha}  /tmp/uv.tar.gz" | sha256sum -c - && \
+        tar -xzf /tmp/uv.tar.gz -C /usr/local/bin --strip-components=1 \
+            "uv-${triple}/uv" "uv-${triple}/uvx" && \
+        rm /tmp/uv.tar.gz && \
+        uv --version | grep -qx "uv ${UV_VERSION}.*" && uv --version ; \
     fi
 
 # --- Unprivileged runner user -------------------------------------------

@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `uv` in the image (build argument `INSTALL_UV`, default `true`): the official
+  static binary of astral-sh/uv, version and per-architecture SHA-256 pinned in
+  the Dockerfile and checked at build time, in `/usr/local/bin`. Workflows that
+  use `uv` no longer need to install it.
+
 - Everyday tools of GitHub-hosted runners in the base image: `git-lfs`, `zip`,
   `xz-utils`, `zstd`, `bzip2`, `file`, `wget`, `rsync` and an SSH client
   (`openssh-client`). `zstd` lets `actions/cache` use its faster format.

@@ -48,6 +48,7 @@ all of them.
 |---|---|---|
 | `INSTALL_DOCKER_CLI` | Docker CLI, Compose and Buildx plugins (client only), see [Docker inside workflows](docker-in-workflow.md) | — |
 | `INSTALL_GH_CLI` | GitHub CLI (`gh`), see [GitHub CLI inside workflows](github-cli.md) | — |
+| `INSTALL_UV` | `uv` and `uvx` (the Python package and project manager), see [uv](#uv) | about 40 MB |
 | `INSTALL_BUILD_TOOLS` | `build-essential` (`gcc`, `g++`, `make`) and a system Python: `python3`, `python3-venv`, `python3-pip`, `pipx` | about 440 MB |
 
 ### Build tools and Python
@@ -64,6 +65,22 @@ follows the distribution's rules:
 - For a specific Python version, keep using
   [`actions/setup-python`](https://github.com/actions/setup-python): the
   system Python is whatever the base image ships.
+
+### uv
+
+`uv` is the official static binary of [astral-sh/uv](https://github.com/astral-sh/uv),
+installed in `/usr/local/bin` for the `linux/amd64` and `linux/arm64` images. The
+Dockerfile pins the version (`UV_VERSION`) and the SHA-256 of each architecture's
+release archive (`UV_SHA256_AMD64`, `UV_SHA256_ARM64`, the values published with the
+release on GitHub); the build fails when a checksum does not match, and there is no
+installer script and no `pip` involved. It does not need the system Python: `uv`
+manages Python versions and environments itself.
+
+To update it, change the three values together, taking the checksums from the
+`.sha256` files of the release page, and rebuild. A project that pins a `uv`
+version in its own checks (`uv --version` equal to a constant) moves that constant
+with the image. Dependabot does not follow this pin: it is a release asset, not an
+image.
 
 ## Deliberately not bundled
 

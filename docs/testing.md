@@ -48,7 +48,8 @@ on tagged releases — see [Prebuilt image](prebuilt-image.md).
 [`tests/test_image_tools.sh`](https://github.com/tommasomarchionni/github-runner/blob/main/tests/test_image_tools.sh)
 runs inside a built image, as the unprivileged `runner` user, and checks
 that every bundled tool is there and works (a zip round trip, zstd and xz
-archives, a Python virtual environment, a compiled C program):
+archives, a Python virtual environment, a compiled C program, `uv` at the pinned
+version):
 
 ```bash
 tests/test_image_tools.sh github-runner:test full   # default build arguments

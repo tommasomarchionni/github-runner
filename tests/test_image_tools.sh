@@ -55,6 +55,23 @@ expect_present uv
 expect_present uvx
 expect_ok "uv is version ${uv_version}, run as the runner user" "uv --version | grep -q '^uv ${uv_version} '"
 expect_ok "uv lives in /usr/local/bin, not in a user directory" '[ "$(command -v uv)" = /usr/local/bin/uv ]'
+# The Chromium browser of Playwright and its system libraries (INSTALL_PLAYWRIGHT_CHROMIUM, default
+# true), for the Playwright version the Dockerfile names: a job runs browser tests without apt.
+playwright_version="$(sed -n 's/^ARG PLAYWRIGHT_VERSION=//p' "$(dirname "${BASH_SOURCE[0]}")/../docker/Dockerfile")"
+[ -n "${playwright_version}" ] || { echo "PLAYWRIGHT_VERSION not found in docker/Dockerfile" >&2; exit 2; }
+expect_ok "PLAYWRIGHT_BROWSERS_PATH is /opt/ms-playwright" '[ "${PLAYWRIGHT_BROWSERS_PATH}" = /opt/ms-playwright ]'
+expect_ok "the browser is for Playwright ${playwright_version} (.playwright-version)" \
+    "grep -qx '${playwright_version}' \"\${PLAYWRIGHT_BROWSERS_PATH}/.playwright-version\""
+expect_ok "the browser directory belongs to the runner user, who can add browsers to it" \
+    '[ -O "${PLAYWRIGHT_BROWSERS_PATH}" ] && [ -w "${PLAYWRIGHT_BROWSERS_PATH}" ]'
+expect_ok "Chrome for Testing answers its version" \
+    'exe="$(find "${PLAYWRIGHT_BROWSERS_PATH}" -type f -name chrome)" && [ -n "${exe}" ] && "${exe}" --version'
+expect_ok "the headless shell renders a page as the runner user, with no package to install" \
+    'exe="$(find "${PLAYWRIGHT_BROWSERS_PATH}" -type f -name chrome-headless-shell)" && [ -n "${exe}" ] && "${exe}" --no-sandbox --dump-dom "data:text/html,<p>ok</p>" 2>/dev/null | grep -q "<p>ok</p>"'
+expect_ok "Node.js stays in the build stage, out of the image" '! command -v node'
+# fuser and lsof name the process that holds a lock (apt, dpkg, a port) in a job's diagnostics.
+expect_present fuser
+expect_present lsof
 # The base must be the Ubuntu LTS of GitHub-hosted runners: setup-* actions have
 # no prebuilt binaries for interim releases.
 expect_ok "the base image is Ubuntu 24.04 LTS" \

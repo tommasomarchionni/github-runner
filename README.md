@@ -24,7 +24,8 @@ without ever copying a temporary registration token by hand.
   runner group, ephemeral mode, GitHub Enterprise Server
 - The everyday tooling of GitHub-hosted runners baked in: Git and Git LFS,
   curl, wget, jq, zip/unzip, xz, zstd, rsync, an SSH client, `ip`, plus the
-  optional Docker CLI, GitHub CLI (`gh`), C/C++ toolchain and system Python —
+  optional Docker CLI, GitHub CLI (`gh`), `uv`, Chromium of Playwright with its
+  system libraries, C/C++ toolchain and system Python —
   see [Bundled tools](docs/bundled-tools.md)
 - Graceful shutdown: deregisters itself from GitHub on stop
 - Prebuilt multi-arch image published to GHCR, or build it yourself

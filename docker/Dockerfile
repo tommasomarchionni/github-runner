@@ -8,6 +8,27 @@
 #     --build-arg RUNNER_VERSION=2.337.0 \
 #     -f docker/Dockerfile .
 #
+# The Playwright version the bundled browser is installed for. A project whose
+# lock file names another version installs its own browser in the job (see
+# docs/bundled-tools.md, "Playwright browser"): keep it equal to the version of
+# the projects that use this image. Declared before the first FROM so that both
+# stages below see the same default.
+ARG PLAYWRIGHT_VERSION=1.65.0
+
+# --- Build stage: the Playwright command line, only to install the browser --
+# Node.js and playwright-core never reach the final image: the browser step
+# below mounts this stage for the length of one RUN. The node binary of the
+# official image runs on the Ubuntu base (glibc is newer there).
+FROM node:22.22.3-bookworm-slim AS playwright-cli
+ARG PLAYWRIGHT_VERSION
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN mkdir -p /opt/playwright-cli/bin && \
+    cp /usr/local/bin/node /opt/playwright-cli/bin/node && \
+    npm install --prefix /opt/playwright-cli --no-audit --no-fund --ignore-scripts \
+        "playwright-core@${PLAYWRIGHT_VERSION}" && \
+    /opt/playwright-cli/bin/node /opt/playwright-cli/node_modules/playwright-core/cli.js --version \
+        | grep -qx "Version ${PLAYWRIGHT_VERSION}"
+
 # Ubuntu LTS, the release GitHub-hosted runners use (`ubuntu-24.04`). Keep it on
 # an LTS: the `setup-*` actions (setup-python, setup-node, ...) and browser
 # installers publish prebuilt binaries for the hosted-runner LTS releases only,
@@ -41,6 +62,12 @@ ARG INSTALL_UV=true
 ARG UV_VERSION=0.13.3
 ARG UV_SHA256_AMD64=e4f169ec380f1793b898a6f1fcbacd22db25cf7ca0349a6e96ffb85b69998d04
 ARG UV_SHA256_ARM64=611ff684f193a84d2fdad29c5f12505d02ece94984c7c982cdde950eba5c95b9
+# Set to "true" to install the Chromium browser of Playwright, at the version
+# above, with the system libraries it needs (what `playwright install
+# --with-deps chromium` would install in every job), so that a job runs browser
+# tests without apt. See docs/bundled-tools.md, "Playwright browser".
+ARG INSTALL_PLAYWRIGHT_CHROMIUM=true
+ARG PLAYWRIGHT_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_VERSION=${RUNNER_VERSION} \
@@ -79,7 +106,9 @@ RUN apt-get update && \
         iproute2 \
         jq \
         lsb-release \
+        lsof \
         openssh-client \
+        psmisc \
         rsync \
         sudo \
         tar \
@@ -175,6 +204,85 @@ RUN useradd --create-home --uid 1001 --shell /bin/bash runner && \
     usermod -aG sudo runner && \
     echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
     chmod 0440 /etc/sudoers.d/runner
+
+# --- Optional Playwright Chromium and its system libraries -------------------
+# PLAYWRIGHT_BROWSERS_PATH is where Playwright looks for browsers and installs
+# them: one directory for every user, owned by the runner user so a job can add
+# the browser of another Playwright version without sudo. It exists, empty, in
+# an image built without the browser too.
+#
+# The packages are the ones `playwright install-deps chromium` installs on
+# Ubuntu 24.04 (amd64 and arm64 share the list): the X server and fonts of its
+# "tools" group, which the browser uses to render text and run headed, then the
+# libraries of Chromium. They are listed here, not left to `install-deps`, so
+# the image says what it carries; the build then asks Playwright itself
+# (`install-deps --dry-run`, which simulates the installation with apt) and
+# fails unless every dependency is installed, so a list that falls behind a
+# new Playwright version stops the build instead of the jobs.
+# `install chromium` brings Chrome for Testing, its headless shell and ffmpeg.
+# The file .playwright-version records the Playwright version the browser is
+# for: a job compares it with its own lock file.
+# DL3008: same rolling-repository rationale as above.
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
+# hadolint ignore=DL3008
+RUN --mount=type=bind,from=playwright-cli,source=/opt/playwright-cli,target=/opt/playwright-cli \
+    install -d -o runner -g runner "${PLAYWRIGHT_BROWSERS_PATH}" && \
+    if [ "$INSTALL_PLAYWRIGHT_CHROMIUM" = "true" ]; then \
+        set -eu ; \
+        playwright() { /opt/playwright-cli/bin/node /opt/playwright-cli/node_modules/playwright-core/cli.js "$@"; }; \
+        apt-get update ; \
+        apt-get install -y --no-install-recommends \
+            fonts-freefont-ttf \
+            fonts-ipafont-gothic \
+            fonts-liberation \
+            fonts-noto-color-emoji \
+            fonts-tlwg-loma-otf \
+            fonts-unifont \
+            fonts-wqy-zenhei \
+            libfontconfig1 \
+            libfreetype6 \
+            xfonts-cyrillic \
+            xfonts-scalable \
+            xvfb \
+            libasound2t64 \
+            libatk-bridge2.0-0t64 \
+            libatk1.0-0t64 \
+            libatspi2.0-0t64 \
+            libcairo2 \
+            libcups2t64 \
+            libdbus-1-3 \
+            libdrm2 \
+            libgbm1 \
+            libglib2.0-0t64 \
+            libnspr4 \
+            libnss3 \
+            libpango-1.0-0 \
+            libx11-6 \
+            libxcb1 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxext6 \
+            libxfixes3 \
+            libxkbcommon0 \
+            libxrandr2 ; \
+        playwright install chromium ; \
+        playwright install-deps --dry-run chromium | tee /tmp/playwright-deps.txt ; \
+        grep -qx 'All system dependencies are installed.' /tmp/playwright-deps.txt ; \
+        rm -rf /var/lib/apt/lists/* /tmp/playwright-deps.txt ; \
+        executables="$(find "${PLAYWRIGHT_BROWSERS_PATH}" -type f -perm -u+x \
+            \( -name chrome -o -name chrome-headless-shell \) | sort)" ; \
+        if [ "$(printf '%s\n' "${executables}" | grep -c .)" -ne 2 ]; then \
+            echo "Expected chrome and chrome-headless-shell, found: ${executables}" >&2; exit 1; \
+        fi ; \
+        printf '%s\n' "${executables}" | while read -r executable; do \
+            if ldd "${executable}" | grep 'not found'; then \
+                echo "${executable} lacks a system library" >&2; exit 1; \
+            fi ; \
+        done ; \
+        echo "${PLAYWRIGHT_VERSION}" > "${PLAYWRIGHT_BROWSERS_PATH}/.playwright-version" ; \
+        chown -R runner:runner "${PLAYWRIGHT_BROWSERS_PATH}" ; \
+        ls -la "${PLAYWRIGHT_BROWSERS_PATH}" ; \
+    fi
 
 WORKDIR ${RUNNER_HOME}
 

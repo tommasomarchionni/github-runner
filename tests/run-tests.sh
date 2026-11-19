@@ -19,6 +19,9 @@ docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_entrypoin
 echo "==> Base image rule (bats): Ubuntu LTS in the Dockerfile, Dependabot ignore rule"
 docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_base_image.bats
 
+echo "==> Playwright browser rule (bats): version, build stage, browser directory, system libraries"
+docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_playwright_browser.bats
+
 echo "==> Docker image build"
 docker build -t github-runner:test -f docker/Dockerfile docker
 

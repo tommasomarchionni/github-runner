@@ -56,6 +56,21 @@ jobs:
             command -v "$tool" >/dev/null && "$tool" --version | head -n1 || echo "not bundled: $tool"
           done
 
+      - name: Check the Playwright browser
+        run: |
+          # Present unless the image was built with INSTALL_PLAYWRIGHT_CHROMIUM=false.
+          if [ -r "${PLAYWRIGHT_BROWSERS_PATH:-}/.playwright-version" ]; then
+            echo "Playwright $(cat "${PLAYWRIGHT_BROWSERS_PATH}/.playwright-version") browsers in ${PLAYWRIGHT_BROWSERS_PATH}"
+            shell="$(find "${PLAYWRIGHT_BROWSERS_PATH}" -type f -name chrome-headless-shell)"
+            "${shell}" --no-sandbox --dump-dom 'data:text/html,<p>ok</p>' 2>/dev/null | grep -q '<p>ok</p>'
+            echo "The headless shell renders a page."
+          else
+            echo "not bundled: Playwright browser"
+          fi
+          for tool in fuser lsof; do
+            command -v "$tool" >/dev/null || { echo "missing: $tool" >&2; exit 1; }
+          done
+
       - name: Write/read on the persistent work directory
         run: |
           echo "smoke-test-$(date -u +%s)" > smoke-test.txt

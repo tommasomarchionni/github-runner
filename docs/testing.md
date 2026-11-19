@@ -21,6 +21,11 @@ This runs, entirely inside Docker (nothing to install on your machine):
    and checks that the Dockerfile builds on an Ubuntu LTS and that Dependabot
    ignores major and minor bumps of the base image (see
    [Base image](bundled-tools.md#base-image-ubuntu-lts)).
+   A third (`tests/test_playwright_browser.bats`) checks the rules of the
+   [Playwright browser](bundled-tools.md#playwright-browser): one pinned
+   `PLAYWRIGHT_VERSION`, Node.js only in a build stage, the browser directory
+   and its version file, the system packages listed in the Dockerfile and
+   checked by Playwright at build time.
 4. A full **image build** (`docker build`), catching any Dockerfile
    regression.
 5. A **strict docs build** (`mkdocs build --strict`), catching broken
@@ -49,7 +54,8 @@ on tagged releases — see [Prebuilt image](prebuilt-image.md).
 runs inside a built image, as the unprivileged `runner` user, and checks
 that every bundled tool is there and works (a zip round trip, zstd and xz
 archives, a Python virtual environment, a compiled C program, `uv` at the pinned
-version):
+version, the Playwright browser of `PLAYWRIGHT_VERSION` rendering a page as the
+`runner` user, `fuser` and `lsof`, and no Node.js in the image):
 
 ```bash
 tests/test_image_tools.sh github-runner:test full   # default build arguments

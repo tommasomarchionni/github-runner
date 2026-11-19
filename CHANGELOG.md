@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Chromium of Playwright and its system libraries in the image (build argument
+  `INSTALL_PLAYWRIGHT_CHROMIUM`, default `true`; version `PLAYWRIGHT_VERSION`,
+  default 1.65.0): the packages of `playwright install-deps chromium` listed in
+  the Dockerfile and checked by Playwright at build time, the browser in
+  `PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright` (owned by `runner`) with
+  `.playwright-version`. Jobs run browser tests without `apt`; Node.js stays in
+  a build stage.
+- `fuser` (`psmisc`) and `lsof` in the base image, to name the process that
+  holds a lock.
+
 - `uv` in the image (build argument `INSTALL_UV`, default `true`): the official
   static binary of astral-sh/uv, version and per-architecture SHA-256 pinned in
   the Dockerfile and checked at build time, in `/usr/local/bin`. Workflows that

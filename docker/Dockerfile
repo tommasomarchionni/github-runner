@@ -271,14 +271,14 @@ RUN --mount=type=bind,from=playwright-cli,source=/opt/playwright-cli,target=/opt
         rm -rf /var/lib/apt/lists/* /tmp/playwright-deps.txt ; \
         executables="$(find "${PLAYWRIGHT_BROWSERS_PATH}" -type f -perm -u+x \
             \( -name chrome -o -name chrome-headless-shell \) | sort)" ; \
-        if [ "$(grep -c . <<< "${executables}")" -ne 2 ]; then \
+        if [ "$(printf '%s\n' "${executables}" | grep -c .)" -ne 2 ]; then \
             echo "Expected chrome and chrome-headless-shell, found: ${executables}" >&2; exit 1; \
         fi ; \
-        while read -r executable; do \
+        printf '%s\n' "${executables}" | while read -r executable; do \
             if ldd "${executable}" | grep 'not found'; then \
                 echo "${executable} lacks a system library" >&2; exit 1; \
             fi ; \
-        done <<< "${executables}" ; \
+        done ; \
         echo "${PLAYWRIGHT_VERSION}" > "${PLAYWRIGHT_BROWSERS_PATH}/.playwright-version" ; \
         chown -R runner:runner "${PLAYWRIGHT_BROWSERS_PATH}" ; \
         ls -la "${PLAYWRIGHT_BROWSERS_PATH}" ; \

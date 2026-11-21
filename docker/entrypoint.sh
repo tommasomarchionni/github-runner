@@ -148,8 +148,18 @@ is_configured() {
     [[ -f "${RUNNER_HOME}/.runner" && -f "${RUNNER_HOME}/.credentials" ]]
 }
 
+# Removes every file of a previous registration. The runner (2.33x) also leaves
+# .runner_migrated; with it present and .runner gone, config.sh refuses with
+# "Cannot configure the runner because it is already configured".
+wipe_runner_state() {
+    rm -f "${RUNNER_HOME}/.runner" "${RUNNER_HOME}/.credentials" "${RUNNER_HOME}/.credentials_rsaparams" \
+        "${RUNNER_HOME}/.runner_migrated" "${RUNNER_HOME}/.credentials_migrated"
+}
+
 configure_runner() {
     local scope="$1" reg_token url labels_arg
+    # Not configured here (is_configured was false): old markers must not block config.sh.
+    wipe_runner_state
     reg_token="$(get_registration_token "${scope}")"
     [[ -n "${reg_token}" && "${reg_token}" != "null" ]] || die "Could not obtain a registration token from GitHub."
     url="$(config_url "${scope}")"
@@ -222,7 +232,7 @@ main() {
         if [[ "${RUNNER_EPHEMERAL}" == "true" || "${RUNNER_FORCE_RECONFIGURE}" == "true" ]]; then
             # Ephemeral runners are single-use: never resume a stale registration.
             # RUNNER_FORCE_RECONFIGURE is the manual escape hatch for troubleshooting.
-            rm -f .runner .credentials .credentials_rsaparams
+            wipe_runner_state
         fi
 
         if is_configured; then
@@ -254,7 +264,7 @@ main() {
             log "Runner exited after only ${elapsed}s with exit code ${exit_code}: the registration in the volume looks stale/invalid."
             log "Wiping local runner state and re-registering (attempt $(( attempt + 1 ))/${RUNNER_START_MAX_ATTEMPTS})..."
             deregister_runner "${scope}" 2>/dev/null || true
-            rm -f .runner .credentials .credentials_rsaparams
+            wipe_runner_state
             sleep "$(( attempt * 5 ))"
             (( attempt += 1 ))
             continue

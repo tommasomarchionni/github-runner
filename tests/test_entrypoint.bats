@@ -124,3 +124,27 @@ setup() {
     source "${ENTRYPOINT}"
     [ "${RUNNER_FORCE_RECONFIGURE}" = "true" ]
 }
+
+@test "wipe_runner_state: removes the registration files and the migration markers" {
+    export RUNNER_HOME="$(mktemp -d)"
+    touch "${RUNNER_HOME}/.runner" "${RUNNER_HOME}/.credentials" "${RUNNER_HOME}/.credentials_rsaparams" \
+        "${RUNNER_HOME}/.runner_migrated" "${RUNNER_HOME}/.credentials_migrated" "${RUNNER_HOME}/config.sh"
+    run wipe_runner_state
+    [ "$status" -eq 0 ]
+    for f in .runner .credentials .credentials_rsaparams .runner_migrated .credentials_migrated; do
+        [ ! -e "${RUNNER_HOME}/${f}" ]
+    done
+    # Only registration state goes away.
+    [ -e "${RUNNER_HOME}/config.sh" ]
+    rm -rf "${RUNNER_HOME}"
+}
+
+@test "wipe_runner_state: a volume with only .runner_migrated is not configured and is cleaned" {
+    export RUNNER_HOME="$(mktemp -d)"
+    touch "${RUNNER_HOME}/.runner_migrated"
+    run is_configured
+    [ "$status" -ne 0 ]
+    wipe_runner_state
+    [ ! -e "${RUNNER_HOME}/.runner_migrated" ]
+    rm -rf "${RUNNER_HOME}"
+}

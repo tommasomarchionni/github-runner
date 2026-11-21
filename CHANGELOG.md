@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Registering again from a volume that holds `.runner_migrated` no longer fails with
+  "Cannot configure the runner because it is already configured". The runner (2.33x)
+  leaves that marker next to `.runner`; the entrypoint removed `.runner`,
+  `.credentials` and `.credentials_rsaparams` but not the marker, so `config.sh`
+  refused. One function now wipes every registration file, including the markers, and
+  runs before each registration and in both self-healing paths.
 - Base image back to Ubuntu 24.04 LTS, the release GitHub-hosted runners use.
   A Dependabot bump to the interim 25.10 release made `actions/setup-python`
   (and any other `setup-*` action without a cached tool) fail with "The version

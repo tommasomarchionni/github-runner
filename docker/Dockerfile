@@ -310,6 +310,12 @@ RUN set -eu; \
 COPY --chown=runner:runner entrypoint.sh /home/runner/entrypoint.sh
 RUN chmod +x /home/runner/entrypoint.sh
 
+# Runs before every job and removes broken tracking refs from the working copy (docs/persistence.md).
+# Set ACTIONS_RUNNER_HOOK_JOB_STARTED to another script, or to an empty value, to replace or drop it.
+COPY --chown=runner:runner job-started.sh /home/runner/job-started.sh
+RUN chmod +x /home/runner/job-started.sh
+ENV ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/job-started.sh
+
 USER 1001
 WORKDIR ${RUNNER_HOME}
 

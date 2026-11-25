@@ -7,8 +7,8 @@
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-echo "==> Shellcheck on docker/entrypoint.sh and tests/test_image_tools.sh"
-docker run --rm -v "$(pwd)":/mnt -w /mnt koalaman/shellcheck:stable docker/entrypoint.sh tests/test_image_tools.sh
+echo "==> Shellcheck on docker/entrypoint.sh, docker/job-started.sh and tests/test_image_tools.sh"
+docker run --rm -v "$(pwd)":/mnt -w /mnt koalaman/shellcheck:stable docker/entrypoint.sh docker/job-started.sh tests/test_image_tools.sh
 
 echo "==> Hadolint on docker/Dockerfile"
 docker run --rm -i hadolint/hadolint < docker/Dockerfile
@@ -21,6 +21,11 @@ docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_base_imag
 
 echo "==> Playwright browser rule (bats): version, build stage, browser directory, system libraries"
 docker run --rm -v "$(pwd)":/code -w /code bats/bats:latest tests/test_playwright_browser.bats
+
+echo "==> Job-started hook (bats): broken tracking refs removed, the rest untouched"
+# The bats image has no git; the hook tests build throwaway repositories.
+docker run --rm -v "$(pwd)":/code -w /code --entrypoint sh bats/bats:latest \
+    -c 'apk add --no-cache git >/dev/null && bats tests/test_job_hook.bats'
 
 echo "==> Docker image build"
 docker build -t github-runner:test -f docker/Dockerfile docker

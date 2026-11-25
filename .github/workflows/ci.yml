@@ -23,7 +23,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./tests"
-          ignore_names: test_entrypoint.bats test_base_image.bats test_playwright_browser.bats
+          ignore_names: test_entrypoint.bats test_base_image.bats test_playwright_browser.bats test_job_hook.bats
 
   hadolint:
     name: Hadolint (Dockerfile)
@@ -51,6 +51,8 @@ jobs:
         run: bats tests/test_base_image.bats
       - name: Run Playwright browser rule tests
         run: bats tests/test_playwright_browser.bats
+      - name: Run job-started hook tests
+        run: bats tests/test_job_hook.bats
 
   build:
     name: Build Docker image

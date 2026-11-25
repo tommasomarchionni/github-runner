@@ -87,6 +87,18 @@ its old image until it is redeployed:
 Then check it with the [smoke test](testing.md#end-to-end-smoke-test), which
 runs `gh --version` on the runner.
 
+## A job fails at checkout with `bad object refs/remotes/...` or `reference broken`
+
+A tracking ref in the runner's working copy points to an object the clone does not have, and
+restarting the container keeps it (the working copy is in the volume). Images from this version on
+remove such refs before every job (see [Persistence](persistence.md#broken-tracking-refs-in-the-job-working-copy)).
+On an older image, remove the ref once, with the runner idle:
+
+```bash
+docker exec <runner> git -C /home/runner/actions-runner/_work/<repo>/<repo> \
+    update-ref -d refs/remotes/origin/<branch>
+```
+
 ## Still stuck?
 
 Open an issue with your (redacted) logs and configuration using the

@@ -52,6 +52,25 @@ out-of-band, the very next container start will notice, clean up, and
 re-authenticate correctly on its own — without you having to touch the
 volume or generate anything by hand.
 
+## Broken tracking refs in the job working copy
+
+The job working copy (`_work/<repo>/<repo>`) lives in the same volume as the registration, so it
+survives jobs and restarts. If a tracking ref (`refs/remotes/...`) there is empty, unreadable or
+points to an object the clone does not have (a force-pushed branch such as a release bot's, or a
+fetch or `gc` cut short when the container stopped), the next job's checkout fails with
+`bad object refs/remotes/origin/<branch>` or `cannot lock ref ... reference broken`. Restarting the
+runner does not help: the volume keeps the ref.
+
+The image therefore runs `/home/runner/job-started.sh` before every job
+(`ACTIONS_RUNNER_HOOK_JOB_STARTED`). It removes only those refs, loose or packed; the checkout's
+fetch recreates them. Local branches, tags and the working tree are never touched, it reads no
+secret, and it always exits 0 so it can never fail a job. Each removal is one line in the job log
+("A job started hook has been configured by the self-hosted runner administrator", then
+`job-started: removed the broken ref ...`).
+
+To use your own hook, or none, set `ACTIONS_RUNNER_HOOK_JOB_STARTED` to another script, or to an
+empty value.
+
 ## Tuning
 
 - `RUNNER_STARTUP_GRACE_SECONDS`: increase it if your environment is slow

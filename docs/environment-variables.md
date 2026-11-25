@@ -59,6 +59,7 @@ service always will.
 | `RUNNER_LABELS` | No | (empty) | Comma-separated custom labels, added on top of the automatic `self-hosted`/OS/arch labels — see [Labels and runner groups](labels-and-groups.md) |
 | `RUNNER_GROUP` | No | `Default` | Only relevant for organization/enterprise runners |
 | `RUNNER_WORKDIR` | No | `_work` | Job working directory inside the container |
+| `ACTIONS_RUNNER_HOOK_JOB_STARTED` | No | `/home/runner/job-started.sh` | Script the runner runs before every job; the default removes broken tracking refs from the working copy, see [Persistence](persistence.md). Set it to another script, or empty, to replace or drop it |
 | `RUNNER_EPHEMERAL` | No | `false` | `true` = run a single job then self-deregister, see [Ephemeral runners](ephemeral.md) |
 | `RUNNER_DISABLE_UPDATE` | No | `true` | Prevents the runner from attempting a self-update (recommended: update the image/`RUNNER_VERSION` instead) |
 | `RUNNER_REPLACE` | No | `true` | Automatically replaces an already-registered runner with the same name, instead of failing registration |

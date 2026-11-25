@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- A job-started hook (`/home/runner/job-started.sh`, set through `ACTIONS_RUNNER_HOOK_JOB_STARTED`)
+  removes, before every job, the tracking refs of the job working copy that are empty,
+  unreadable or point to a missing object. Such a ref made the checkout of every later job fail
+  with `bad object` or `reference broken`, and survived container restarts because the working
+  copy is in the volume. Local branches, tags and the working tree are never touched, and the
+  hook never fails a job.
+
 ### Fixed
 
 - Registering again from a volume that holds `.runner_migrated` no longer fails with

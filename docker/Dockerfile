@@ -19,7 +19,7 @@ ARG PLAYWRIGHT_VERSION=1.65.1
 # Node.js and playwright-core never reach the final image: the browser step
 # below mounts this stage for the length of one RUN. The node binary of the
 # official image runs on the Ubuntu base (glibc is newer there).
-FROM node:22.22.3-bookworm-slim AS playwright-cli
+FROM node:22.23.4-bookworm-slim AS playwright-cli
 ARG PLAYWRIGHT_VERSION
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/playwright-cli/bin && \

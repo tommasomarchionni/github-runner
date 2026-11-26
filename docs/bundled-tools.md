@@ -86,6 +86,11 @@ image.
 
 ### Playwright browser
 
+The Node.js that runs `playwright-core` in the `playwright-cli` stage stays on the major
+version of the base image: its binary is copied into the Ubuntu image, and a newer major
+needs system libraries Ubuntu does not ship (`libatomic`). Dependabot ignores its major
+bumps (`.github/dependabot.yml`); move it by hand and rebuild.
+
 Browser tests need Chromium and about thirty system packages (libraries, an X
 server, fonts). Installed by every job (`npx playwright install --with-deps
 chromium`), they cost minutes of `apt` per job, depend on the package mirrors,

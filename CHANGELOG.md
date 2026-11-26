@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Chromium of Playwright and its system libraries in the image (build argument
   `INSTALL_PLAYWRIGHT_CHROMIUM`, default `true`; version `PLAYWRIGHT_VERSION`,
-  default 1.65.0): the packages of `playwright install-deps chromium` listed in
+  default 1.65.1): the packages of `playwright install-deps chromium` listed in
   the Dockerfile and checked by Playwright at build time, the browser in
   `PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright` (owned by `runner`) with
   `.playwright-version`. Jobs run browser tests without `apt`; Node.js stays in

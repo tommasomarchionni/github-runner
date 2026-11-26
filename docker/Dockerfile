@@ -13,7 +13,7 @@
 # docs/bundled-tools.md, "Playwright browser"): keep it equal to the version of
 # the projects that use this image. Declared before the first FROM so that both
 # stages below see the same default.
-ARG PLAYWRIGHT_VERSION=1.65.0
+ARG PLAYWRIGHT_VERSION=1.65.1
 
 # --- Build stage: the Playwright command line, only to install the browser --
 # Node.js and playwright-core never reach the final image: the browser step

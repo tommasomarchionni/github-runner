@@ -24,8 +24,14 @@ updates:
     # hosted-runner LTS releases) and lose their package archive after nine
     # months. Moving to the next LTS is a deliberate, manual change (see
     # docs/bundled-tools.md); digest updates of the current tag still arrive.
+    # The Node.js of the playwright-cli stage is copied into the Ubuntu image: a
+    # major bump needs libraries that Ubuntu lacks (libatomic, #852), so it is a
+    # manual change (docs/bundled-tools.md, "Playwright browser").
     ignore:
       - dependency-name: "ubuntu"
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
+      - dependency-name: "node"
+        update-types:
+          - "version-update:semver-major"
